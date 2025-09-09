@@ -64,11 +64,24 @@ const props = defineProps({
   grupos: { type: Array, required: true }
 })
 
+const emit = defineEmits(["update-edited"])
+
 const store = useTabelasStore()
 const gruposLocal = ref(Array.isArray(props.grupos) ? JSON.parse(JSON.stringify(props.grupos)) : [])
+const editedItems = ref([])
 
-function updateStore() {
+function updateStoreAndTrack(item) {
+  // Atualiza o store normalmente
   store.setTabela4({ grupos: gruposLocal.value })
+
+  // Marca o item como editado
+  const idx = editedItems.value.findIndex(e => e.id === item.id)
+  if (idx === -1) {
+    editedItems.value.push({ ...item })
+  } else {
+    editedItems.value[idx] = { ...item }
+  }
+  emit("update-edited", editedItems.value)
 }
 
 // Quando o percentual é alterado, recalcula os meses
@@ -80,7 +93,7 @@ function onPercentChange(item) {
   item.fev_2024 = novoValor
   item.jan_2025 = novoValor
   item.fev_2025 = novoValor
-  updateStore()
+  updateStoreAndTrack(item)
 }
 
 // Quando um dos meses é alterado, recalcula o percentual projetado
@@ -98,13 +111,14 @@ function onMesChange(item) {
   } else {
     item.perc_projetado = 0
   }
-  updateStore()
+  updateStoreAndTrack(item)
 }
 
 watch(
   () => props.grupos,
   (newVal) => {
     gruposLocal.value = Array.isArray(newVal) ? JSON.parse(JSON.stringify(newVal)) : []
+    editedItems.value = []
   }
 )
 </script>

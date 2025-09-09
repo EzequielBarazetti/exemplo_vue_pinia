@@ -8,6 +8,7 @@ import TableComponent4 from "./components/TableComponent4.vue"
 const store = useTabelasStore()
 const dadosEditadosTabela1 = ref([])
 const dadosEditadosTabela2 = ref([])
+const dadosEditadosTabela4 = ref([])
 
 onMounted(() => {
   if (!store.tabela1.length || !store.tabela2.length) {
@@ -40,6 +41,13 @@ async function enviarTabela1() {
   }
 }
 
+async function enviarTabela4() {
+  // Envie store.tabela4 para o back-end
+ 
+console.log('Dados Tabela 4 -->', JSON.stringify(dadosEditadosTabela4.value));
+
+}
+
 async function enviarTabela2() {
   try {
     console.log('dados tabela 2', JSON.stringify(dadosEditadosTabela2.value));
@@ -57,6 +65,7 @@ function atualizarTabela4Pinia(grupos) {
 <template>
     <button @click="enviarTabela1">Enviar Tabela 1</button> <br></br>
     <button @click="enviarTabela2">Enviar Tabela 2</button>
+    <button @click="enviarTabela4">Enviar Tabela 4</button>
    
    <h2>Tabela 1</h2>
   <Tabela1
@@ -82,7 +91,6 @@ function atualizarTabela4Pinia(grupos) {
 <TableComponent4
   v-if="store.tabela4 && Array.isArray(store.tabela4.grupos)"
   :grupos="store.tabela4.grupos"
-  @update="atualizarTabela4Pinia"
+  @update-edited="dadosEditadosTabela4 = $event"
 />
-
 </template>
